@@ -5,6 +5,7 @@
  */
 package modulobot.modules;
 
+import java.io.File;
 import net.dv8tion.jda.core.JDA;
 
 /**
@@ -14,16 +15,23 @@ import net.dv8tion.jda.core.JDA;
 public class ModuleHelper {
 
     private JDA jda;
+    private String prefix;
 
     public ModuleHelper(JDA jda) {
         this.jda = jda;
+        this.prefix = "!";
     }
 
     public JDA getJda() {
         return jda;
     }
- 
+
     public String getPrefix() {
-        return "!";
+        return prefix;
     }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
 }

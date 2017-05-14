@@ -5,6 +5,7 @@
  */
 package modulobot.modules;
 
+import java.io.File;
 import java.io.IOException;
 import modulobot.events.PrefixedMessageReceivedEvent;
 import java.util.EventListener;
@@ -23,8 +24,11 @@ import net.dv8tion.jda.core.events.Event;
 public abstract class Module implements EventListener {
 
     protected final Logger LOGGER;
+    protected final String WRK_FOLDER;
 
     public Module() {
+        WRK_FOLDER = Constantes.MODULES_WORK_FOLDER + this.getClass().getName();
+        new File(WRK_FOLDER).mkdirs();
         LOGGER = Logger.getLogger(this.getClass().getName());
         boolean handlerExisting = false;
         for (Handler handler : LOGGER.getHandlers()) {

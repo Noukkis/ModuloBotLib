@@ -5,12 +5,16 @@
  */
 package modulobot;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,4 +55,59 @@ public class Helper {
         }
         return res;
     }
+    
+    public static boolean serialiseObjet( File file, Object obj ) throws IOException {
+        boolean bResult = false;
+        if ( obj != null ) {
+            ObjectOutputStream out = null;
+            try {
+                out = new ObjectOutputStream( new BufferedOutputStream( new FileOutputStream(file)));
+                out.writeObject( obj );
+                out.flush();
+                out.close();
+                out = null;
+                bResult = true;
+            }
+            finally {
+                if ( out != null ) {
+                    try {
+                        out.close();
+                        out = null;
+                    }
+                    catch ( IOException ex ) {
+                    }
+                }
+                if ( !bResult ) {
+                    try {
+                        file.delete();
+                    }
+                    catch ( Exception e ) {
+                    }
+                }
+            }
+        }
+        return bResult;
+    }
+    
+    public static Object deserialiseObjet( File file ) throws IOException, ClassNotFoundException {
+        Object result = null;
+        ObjectInputStream in = null;
+        try {
+            in = new ObjectInputStream( new BufferedInputStream( new FileInputStream( file ) ) );
+            result = in.readObject();
+            in.close();
+            in = null;
+        } finally {
+            if ( in != null ) {
+                try {
+                    in.close();
+                    in = null;
+                }
+                catch ( IOException ex ) {
+                }
+            }
+        }
+        return result;
+    }
 }
+
