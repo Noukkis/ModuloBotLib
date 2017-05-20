@@ -16,13 +16,20 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class PrefixedMessageReceivedEvent extends MessageReceivedEvent{
     
     private final String unprefixedMessageContent;
+    private final String unprefixedMessageRawContent;
     
     public PrefixedMessageReceivedEvent(MessageReceivedEvent OriginalEvent, String prefix) {
         super(OriginalEvent.getJDA(), OriginalEvent.getResponseNumber(), OriginalEvent.getMessage());
         unprefixedMessageContent = OriginalEvent.getMessage().getContent().replaceFirst(prefix, "");
+        unprefixedMessageRawContent = OriginalEvent.getMessage().getRawContent().replaceFirst(prefix, "");
     }
 
     public String getUnprefixedMessageContent() {
         return unprefixedMessageContent;
     }
+
+    public String getUnprefixedMessageRawContent() {
+        return unprefixedMessageRawContent;
+    }
+    
 }

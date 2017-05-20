@@ -27,40 +27,37 @@ public abstract class Module implements EventListener {
     protected final String WRK_FOLDER;
 
     public Module() {
-        WRK_FOLDER = Constantes.MODULES_WORK_FOLDER + this.getClass().getName();
+        WRK_FOLDER = Constantes.MODULES_WORK_FOLDER + this.getClass().getName() + "\\";
         new File(WRK_FOLDER).mkdirs();
         LOGGER = Logger.getLogger(this.getClass().getName());
-        boolean handlerExisting = false;
-        for (Handler handler : LOGGER.getHandlers()) {
-            if (handler instanceof FileHandler) {
-                handlerExisting = true;
-                break;
-            }
-        }
-        if(!handlerExisting){
             try {
-                Handler handler = new FileHandler(Constantes.MODULES_LOGS_FOLDER + getClass().getName() + ".log");
-                handler.setFormatter(new SimpleFormatter());
-                LOGGER.addHandler(handler);
+                Handler fileHandler = new FileHandler(Constantes.MODULES_LOGS_FOLDER + getClass().getName() + ".log");
+                fileHandler.setFormatter(new SimpleFormatter());
+                LOGGER.addHandler(fileHandler);
             } catch (IOException | SecurityException ex) {
                 Logger.getGlobal().log(Level.SEVERE, "Can't handle FileLogger for " + getClass().getName(), ex);
             }
-        }
+        
     }
 
     /**
      * This method is called one time on the module loading.
      *
-     * @param moduleCtrl the controller your module is allowed to interact with
+     * @param helper the controller your module is allowed to interact with
+     * @return true if the preload worked
      */
-    public abstract void preload(ModuleHelper moduleCtrl);
+    public boolean preload(Helper helper) {
+        return true;
+    }
 
     /**
      * Called when a message beggining with the bot's prefix is received
      *
      * @param event
      */
-    public abstract void onPrefixedMessageReceived(PrefixedMessageReceivedEvent event);
+    public void onPrefixedMessageReceived(PrefixedMessageReceivedEvent event) {
+        
+    }
 
     /**
      * Called when another event than a PrefixedMessageReceivedEvent is
@@ -68,23 +65,37 @@ public abstract class Module implements EventListener {
      *
      * @param event
      */
-    public abstract void onEvent(Event event);
+    public void onEvent(Event event) {
+        
+    }
 
     /**
      * Called when the module is stopping.
      */
-    public abstract void stop();
+    public void stop() {
+        
+    }
 
-    public abstract IModuleCtrl getModuleCtrl();
+    public IModuleCtrl getModuleCtrl() {
+        return null;
+    }
 
     public abstract String getName();
 
-    public abstract String getDescription();
+    public String getDescription() {
+        return "No description available for this module";
+    }
 
-    public abstract String getHelp();
+    public String getHelp() {
+        return "No help available for this module";
+    }
+    
+    public DependencyBundle getDependencyBundle() {
+        return null;
+    }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         boolean res = false;
         if (obj instanceof Module) {
             String objName = ((Module) obj).getName();
@@ -100,4 +111,9 @@ public abstract class Module implements EventListener {
         int hash = 3;
         return hash;
     }
+
+    public final Logger getLOGGER() {
+        return LOGGER;
+    }
+    
 }

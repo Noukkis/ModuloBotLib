@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package modulobot;
+package modulobot.modules;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -15,8 +15,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import modulobot.exception.UnavailableDependencyException;
+import modulobot.serialization.ObjectInputStreamByClass;
+import net.dv8tion.jda.core.JDA;
 
 /**
  *
@@ -24,6 +28,37 @@ import java.util.logging.Logger;
  */
 public class Helper {
 
+    private JDA jda;
+    private String prefix;
+    private ArrayList<Module> modules;
+
+    public Helper(JDA jda, ArrayList<Module> modules) {
+        this.modules = modules;
+        this.jda = jda;
+        this.prefix = "!";
+    }
+
+    public JDA getJda() {
+        return jda;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public DependencyBundle getDependencyBundle(String moduleName) throws UnavailableDependencyException{    
+        for (Module module : modules) {
+            if(module.getClass().getName().equals(moduleName) && module.getDependencyBundle() != null) {
+                return module.getDependencyBundle();
+            }
+        }
+        throw new UnavailableDependencyException("No " + moduleName + " dependency found");
+    }
+    
     public static String readFile(File f) {
         String res = "";
         if (f.isFile()) {
@@ -89,11 +124,11 @@ public class Helper {
         return bResult;
     }
     
-    public static Object deserialiseObjet( File file ) throws IOException, ClassNotFoundException {
+    public static Object deserialiseObjet( File file, Class... classes ) throws IOException, ClassNotFoundException {
         Object result = null;
         ObjectInputStream in = null;
         try {
-            in = new ObjectInputStream( new BufferedInputStream( new FileInputStream( file ) ) );
+            in = new ObjectInputStreamByClass( new BufferedInputStream( new FileInputStream( file ) ), classes );
             result = in.readObject();
             in.close();
             in = null;
@@ -110,4 +145,3 @@ public class Helper {
         return result;
     }
 }
-
